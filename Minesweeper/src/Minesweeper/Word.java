@@ -1,12 +1,15 @@
 package Minesweeper;
 
-/*
- * 英語を日本語に翻訳するクラス
- */
 public class Word {
+	int Language;
 	private boolean Japanese;
 
+	String[] language = new String[2];
+	String[][] word = new String[2][];
+
 	Word(){
+		language[0] = "Japanese";
+		language[1] = "English";
 		Japanese = false;
 	}
 	public void SetJapan(boolean a){
@@ -54,5 +57,8 @@ public class Word {
 			break;
 		}
 		return s;
+
+
+
 	}
 }

@@ -13,14 +13,12 @@ import java.awt.Font;
 import java.awt.event.MouseAdapter;
 
 public class GameGUI extends JFrame implements ActionListener,MouseListener{
-	private static final long serialVersionUID = 1L;//意味なし
+	private static final long serialVersionUID = 1L;
+	final static int CELL_SIZE = 48;
 
-	final static int CELL_SIZE = 48; //一つのマスの大きさ
 
-	private JPanel Panel; //全体パネル
-	private JPanel ButtonPanel; //ボタンパネル
-	private JPanel SidePanel[]; //オプションパネル
-	private JButton Button[][]; 
+	private JPanel Panel,ButtonPanel,SidePanel[];
+	private JButton Button[][];
 	private JLabel label[][];
 	private JLabel display[];
 	private Feild F;
@@ -32,10 +30,9 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 	private int REGTIME=99999;
 	ClassLoader cl;
 	boolean STOP = false;
-	String  LEVEL;
+	String  LEVEL = "";
 	Word W1;
 
-	//コンストラクタ
 	GameGUI(int Level,boolean Japanese){
 		W1 = new Word();
 		F = new Feild(Level);
@@ -78,13 +75,14 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 		FlagIcon = new ImageIcon(cl.getResource("Flag.png")); 
 		BomIcon = new ImageIcon(cl.getResource("Bom.png")); 
 
+		//�N���[�Y�{�^�����������Ƃ��ɃA�v���P�[�V�������I�����邱�Ƃ��Ӗ�����B
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(CELL_SIZE*F.width+50, CELL_SIZE*F.height+150);
 		if(Level == 2)
 			this.setSize(CELL_SIZE*F.height+50, CELL_SIZE*F.height+150);
 		this.setLocationRelativeTo(null);
 		Panel = new JPanel();
-		ButtonPanel = new JPanel(new GridLayout(F.width,F.height));
+		ButtonPanel = new JPanel(new GridLayout(F.width,F.height));//�S�̂̃p�l��
 		SidePanel = new JPanel[4];
 		for(int i = 0; i < 4; i++){
 			SidePanel[i] = new JPanel();
@@ -101,6 +99,8 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 			ButtonPanel.setPreferredSize(new Dimension(F.height*CELL_SIZE, F.width*CELL_SIZE));
 		else
 			ButtonPanel.setPreferredSize(new Dimension(F.width*CELL_SIZE, F.height*CELL_SIZE));
+		//ButtonPanel.setBorder(BorderFactory.createEmptyBorder(50, 10, 10, 10));
+		//panel.addMouseListener(this);
 		getContentPane().add(ButtonPanel);
 		for(int i = 0;i < F.width; i++){
 			for(int j = 0;j < F.height; j++){
@@ -127,15 +127,19 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 		for(int i = 0; i < 5; i++){
 			menuitem[i].addActionListener(this);
 			menu1.add(menuitem[i]);
+
 		}
 
 
 	}
 	public void run(){
 		this.setVisible(true);
+
 	}
 
-	//ボタンが押された時の動作
+
+
+
 	public void actionPerformed(ActionEvent e) {
 		String push = ((AbstractButton)e.getSource()).getText();
 		if(push.equals(W1.toJ("New"))){
@@ -167,7 +171,7 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 			}
 		}
 	}
-	//マスに表示される文字
+
 	private void Display(){
 		for(int i = 0; i < F.width; i++){
 			for(int j = 0; j < F.height; j++){
@@ -199,13 +203,39 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 						if(Button[i][j].getText()!="")
 							label[i][j].setIcon(FlagIcon);
 					}
+
 				}
+
 			}
 			this.setVisible(true);
 		}
 	}
 
-	//クリックされた時の処理
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	//�{�^�����N���b�N���ꂽ���̏���
 	public class myListener extends MouseAdapter{
 		public void mouseClicked(MouseEvent e){
 
@@ -216,11 +246,12 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 						for(int i = 0; i < F.width; i++){
 							for(int j = 0; j < F.height; j++){
 								if(obj == Button[i][j]){
-									//左クリック
+									//���N���b�N
+
 									if(e.getButton()==1){
-										//ダブルクリック
 										if (e.getClickCount() >= 2){
-											F.AroundFlag(i, j);
+
+											F.AroundBlock(i, j);
 										}
 										if(FIRST){
 											F.SetBlock(i, j);
@@ -229,7 +260,7 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 										}
 										F.ClickBlock(i, j);
 									}
-									//右クリック
+									//�E�N���b�N
 									else if(e.getButton()==3){
 										if(!F.B[i][j].isPressed()){
 											F.PushFlag(i, j);
@@ -247,32 +278,35 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 								}
 							}
 						}
-						Display();
+						Display();//this.setVisible(true)���܂�
 					}
-					//GAMEOVERのとき
 					if(!F.isGame()){
 						display[1].setText(W1.toJ("GAMEOVER"));
 						stop = System.currentTimeMillis();
 						time = (stop-start)/1000;
 						DISPLAYTIME = (int)time;
+						toString();
 						DISPLAYTIME(2,time);
 						for(int i = 0; i < F.width; i++){
 							for(int j = 0; j < F.height; j++){
 								if(F.B[i][j].isBom()){
 									label[i][j].setText("●");
+									//label[i][j].setIcon(BomIcon);
 									Button[i][j].setBackground(Color.RED);
 								}
 							}
 						}
 						STOP = true;
 					}
-					//GAMEをクリアした時
+					//GAME�N���A�������ǂ���
 					if(F.isClear()){
 						display[1].setText(W1.toJ("Clear!"));
 						stop = System.currentTimeMillis();
 						time = (stop-start)/1000;
 						DISPLAYTIME = (int)time;
+						toString();
 						DISPLAYTIME(2,DISPLAYTIME);
+						//display[2].setText(String.valueOf(DISPLAYTIME)+W1.toJ("s"));
 						if(REGTIME>(int)time){
 							REGTIME = (int)time;
 							DISPLAYTIME(3,REGTIME);
@@ -283,9 +317,9 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 			}
 			catch(Exception E){
 			}
+
 		}
 	}
-	//再スタート
 	private void ReStart(){
 		start = 0;
 		stop = 0;
@@ -307,13 +341,14 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 				label[i][j].setIcon(null);
 				label[i][j].setHorizontalAlignment(JLabel.CENTER);
 				Button[i][j].setHorizontalAlignment(JLabel.CENTER);
+
 			}
 		}
+		//STOP = false;
 		this.setVisible(true);
 		this.run();
 
 	}
-	//Timeの表示
 	private void DISPLAYTIME(int num,double TIME1){
 		int time1 = (int)TIME1;
 		if(num == 2){
@@ -334,17 +369,6 @@ public class GameGUI extends JFrame implements ActionListener,MouseListener{
 			}else
 				display[num].setText(W1.toJ("Best Time:")+String.valueOf(time1)+W1.toJ("s"));
 		}
-	}
-
-	public void mouseClicked(MouseEvent e) {
-	}
-	public void mouseEntered(MouseEvent e) {
-	}
-	public void mouseExited(MouseEvent e) {
-	}
-	public void mousePressed(MouseEvent e) {
-	}
-	public void mouseReleased(MouseEvent e) {
 	}
 	public static void main(String[] args){
 		GameGUI g = new GameGUI(0,true);

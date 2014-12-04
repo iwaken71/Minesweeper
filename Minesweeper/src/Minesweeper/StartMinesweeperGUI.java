@@ -11,11 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 
-/*************
- * 
- * 最初のメニュー画面の実装
- *
- */
+
 
 public class StartMinesweeperGUI extends JFrame implements ActionListener{
 
@@ -34,7 +30,7 @@ public class StartMinesweeperGUI extends JFrame implements ActionListener{
 		this.SetDATA();
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setBounds(250, 250, 250, 200);
-		panel = new JPanel();
+		panel = new JPanel();//�S�̂̃p�l��
 
 		menu1 = new JMenu(W.toJ("Menu"));
 		menu1.addActionListener(this);
@@ -98,6 +94,7 @@ public class StartMinesweeperGUI extends JFrame implements ActionListener{
 			this.title = title;
 			this.NUM = NUM;
 		}
+
 	}
 	public void run(){
 		this.setVisible(true);
