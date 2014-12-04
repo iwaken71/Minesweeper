@@ -1,16 +1,16 @@
 package Minesweeper;
 
 public class Feild {
-	int width,height;//���ƍ���
-	boolean GAME = true;//GAME�����s���Ă�����
+	int width,height; //マスの縦と横の長さ
+	boolean GAME = true; //ゲームが続いているかどうか
 	protected Block[][] B;
-	int Level;
-	int BomNum;//the number of Boms
-	int FlagNum;//the number of Flags
+	int Level; //ゲームのレベル
+	int BomNum; //爆弾の数
+	int FlagNum; //旗の数
 
-	//�R���X�g���N�^
+	//コンストラクタ
 	public Feild(int Level){
-		//Level�ɂ���ē�Փx��ς���
+		//レベルによって縦と横の長さを設定する
 		this.Level = Level;
 		switch(Level){
 		case 0:
@@ -34,10 +34,11 @@ public class Feild {
 			this.BomNum = 10;
 			break;
 		}
-		//Block
 		B = new Block[width][height];
 		this.FlagNum = this.BomNum;
 	}
+
+	//コンストラクタ　縦と横の長さと爆弾の数を自分で設定できる
 	public Feild(int width,int height,int BomNum){
 		this.width = height;
 		this.height = width;
@@ -46,7 +47,7 @@ public class Feild {
 		this.FlagNum = this.BomNum;
 	}
 
-	//�ĊJ
+	//ゲームを始める
 	public void Start(){
 		GAME = true;
 		int count = 0;
@@ -76,7 +77,7 @@ public class Feild {
 		}
 	}
 
-	//����ݒ�
+	//爆弾をセットする
 	public void SetBlock(int x,int y){
 		int count = 0;
 		for(int i = 0;i < width; i++){
@@ -84,8 +85,6 @@ public class Feild {
 				B[i][j] = new Block(false);
 			}
 		}
-
-		//���e�Z�b�g
 		int i = 0;
 		int j = 0;
 		while(true){
@@ -105,6 +104,7 @@ public class Feild {
 			}
 		}
 	}
+	//最初にクリックした場所の周りには爆弾が来ないようにするメソッド
 	private boolean BlockCCC(int i,int j,int x,int y){
 		for(int k = x-1;k <= x+1;k++){
 			for(int h = y - 1; h <= y + 1; h++){
@@ -112,30 +112,28 @@ public class Feild {
 			}
 		}
 		return false;
-		
-	}
-	//���N���b�N���ꂽ���̏���
-	public void ClickBlock(int x,int y){
-		//��̎�
-		if(B[x][y].isFlag()){
 
+	}
+	//左クリックした時に呼び出す
+	public void ClickBlock(int x,int y){
+		//旗の時
+		if(B[x][y].isFlag()){
 		}
-		//���e�̎�
+		//爆弾の時
 		else if(B[x][y].isBom()){
 			this.SetGame(false);
 		}
 		else{
 			B[x][y].SetPressed(true);
-			//���̔��e�̐����Z�b�g
 			this.SetNumBlock(x, y);
-			//���̔��e�̐����Z�b�g
 			if(SearchBlock(x,y)==0){
 				SpreadBlock(x,y);
 			}
 		}
 
 	}
-
+	
+	//周りの爆弾の数をString型で返す
 	public String CheckBlock(int x,int y){
 		if(B[x][y].isFlag()) return "F";
 		toString();
@@ -143,6 +141,7 @@ public class Feild {
 		if(B[x][y].GetNum() == -1) return "";
 		else return s;
 	}
+	
 	public void PushFlag(int x,int y){
 		if(B[x][y].isFlag())
 			B[x][y].SetFlag(false);
@@ -158,6 +157,7 @@ public class Feild {
 	private void SetNumBlock(int x,int y){
 		B[x][y].SetNum(SearchBlock(x,y));
 	}
+	//周りの爆弾の数を調べる
 	private int SearchBlock(int x,int y){
 		int i,j;
 		int count = 0;
@@ -171,6 +171,7 @@ public class Feild {
 		return count;
 
 	}
+	//周りの爆弾の数が0の場合、その周りのマスをクリックする
 	private void SpreadBlock(int x,int y){
 		int i,j;
 		for(i = x - 1; i <= x + 1; i++){
@@ -185,6 +186,7 @@ public class Feild {
 			}
 		}
 	}
+	//クリア
 	public boolean isClear(){
 		boolean t = true;
 		for(int i = 0;i < width; i++){
@@ -197,21 +199,9 @@ public class Feild {
 			}
 		}return t;
 	}
-	public void SpreadBlock2(int x,int y){
-		int i,j;
-		for(i = x - 1; i <= x + 1; i++){
-			for(j = y - 1; j <= y + 1; j++){
-				if(!((i == x&&j == y)||i < 0||i>= width||j < 0||j >= height)){
-					this.SetNumBlock(i, j);
-					B[i][j].SetPressed(true);
-					if(SearchBlock(i,j)==0&&!B[i][j].isPressed()){
-						SpreadBlock(i,j);
-					}
-				}
-			}
-		}
-	}
-	public void AroundBlock(int x,int y){
+
+	//周りの旗の数を調べ、周りの爆弾と同じなら、その周りのマスをクリックする
+	public void AroundFlag(int x,int y){
 		int i,j;
 		int count = 0;
 		for(i = x - 1; i <= x + 1; i++){

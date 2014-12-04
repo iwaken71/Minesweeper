@@ -1,16 +1,15 @@
 package Minesweeper;
 
 public class Block {
-	private boolean Bom;
-	private int BomNumber;
-	private boolean Flag;
-	//private boolean help;
-	private boolean Pressed;
+	private boolean Bom; //爆弾があるかどうか
+	private int BomNumber; //爆弾の数
+	private boolean Flag; //旗があるかどうか
+	private boolean Pressed; //ボタンが押されているかどうか
 	
+	//コンストラクタ
 	public Block(boolean Bom){
 		this.Bom = Bom;
 		this.Flag = false;
-		//this.help = false;
 		this.Pressed = false;
 		this.BomNumber = -1;
 	}
